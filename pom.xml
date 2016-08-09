@@ -13,6 +13,7 @@
     <properties>
         <redisson.version>2.2.15</redisson.version>
         <log4j.version>1.2.16</log4j.version>
+        <logback.version>1.1.2</logback.version>
     </properties>
 
     <dependencies>
@@ -25,6 +26,12 @@
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
             <version>${redisson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

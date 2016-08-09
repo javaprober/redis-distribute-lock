@@ -1,0 +1,32 @@
+---
+#Master slave mode
+masterSlaveServersConfig:
+  idleConnectionTimeout: 10000
+  pingTimeout: 1000
+  connectTimeout: 1000
+  timeout: 1000
+  retryAttempts: 3
+  retryInterval: 1000
+  reconnectionTimeout: 3000
+  failedAttempts: 3
+  password: null
+  subscriptionsPerConnection: 5
+  clientName: null
+  loadBalancer: !<org.redisson.connection.balancer.RoundRobinLoadBalancer> {}
+  slaveSubscriptionConnectionMinimumIdleSize: 1
+  slaveSubscriptionConnectionPoolSize: 25
+  slaveConnectionMinimumIdleSize: 5
+  slaveConnectionPoolSize: 100
+  masterConnectionMinimumIdleSize: 5
+  masterConnectionPoolSize: 100
+  readMode: "SLAVE"
+  slaveAddresses:
+  - "//127.0.0.1:6381"
+  - "//127.0.0.1:6380"
+  masterAddress:
+  - "//127.0.0.1:6379"
+  database: 0
+threads: 0
+codec: !<org.redisson.codec.JsonJacksonCodec> {}
+useLinuxNativeEpoll: false
+eventLoopGroup: null

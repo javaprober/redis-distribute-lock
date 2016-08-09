@@ -20,7 +20,7 @@ public class RedissionBaseTest extends TestCase{
         SingleServerConfig singleSerververConfig = config.useSingleServer();
         singleSerververConfig.setAddress("127.0.0.1:6379");
         //redisson客户端
-        redissonClient = RedisUtils.getInstance().getRedisson(config);
+        redissonClient = RedisUtils.getInstance().getRedisson();
     }
 
     @Test
@@ -29,6 +29,6 @@ public class RedissionBaseTest extends TestCase{
     }
 
     public void tearDown() {
-        RedisUtils.getInstance().closeRedisson(redissonClient);
+//        RedisUtils.getInstance().closeRedisson(redissonClient);
     }
 }

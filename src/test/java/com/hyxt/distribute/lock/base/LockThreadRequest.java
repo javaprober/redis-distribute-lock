@@ -1,5 +1,6 @@
 package com.hyxt.distribute.lock.base;
 
+import com.hyxt.distribute.lock.util.RedisUtils;
 import org.redisson.RedissonClient;
 import org.redisson.core.RLock;
 
@@ -24,6 +25,7 @@ public class LockThreadRequest extends Thread{
     public void run() {
 
         long begin = System.currentTimeMillis();
+        RedisUtils.getInstance().getRLock(redissonClient,name);
         RLock lock = redissonClient.getLock(name);
         try {
             lock.tryLock(100, 1, TimeUnit.SECONDS);//第一个参数代表等待时间，第二是代表超过时间释放锁，第三个代表设置的时间制

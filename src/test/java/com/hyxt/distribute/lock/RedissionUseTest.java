@@ -22,7 +22,7 @@ public class RedissionUseTest extends RedissionBaseTest {
     public void testPressureMutiThreadRequest() {
 
         List<LockThreadRequest> reqs = new ArrayList<LockThreadRequest>();
-        for(int i = 0 ; i < 10000; i ++) {
+        for(int i = 0 ; i < 100; i ++) {
             String threadNo = "T" + (i%10) + "-" + i;
             LockThreadRequest request = new LockThreadRequest(threadNo,redissonClient);
             reqs.add(request);
