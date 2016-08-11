@@ -7,80 +7,24 @@ import org.redisson.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-
 /**
  * Redisson 创建以及redis操作
  * Created by andy on 2016/8/8.
  */
 public class RedisUtils {
 
-    private static final String PRE_CONFIG = "META-INF/config/";
-
-    private static final String CLUSTER_MODE = "clusterServersConfig.yml";
-
-    private static final String MASTER_SLAVE_MODE = "masterSlaveServersConfig.yml";
-
-    private static final String SENTINEL_MODE = "sentinelServersConfig.yml";
-
-    private static final String ELASTICACHE_MODE = "elasticacheServersConfig.yml";
-
-    private static final String SINGLE_MODE = "singleServerConfig.yml";
-
     private static Logger logger= LoggerFactory.getLogger(RedisUtils.class);
 
-    private static RedisUtils redisUtils;
+    private RedisUtils() {
 
-    private RedissonClient redissonClient;
-
-    private RedisUtils(){}
-
-    /**
-     * 提供单例模式
-     * @return
-     */
-    public static RedisUtils getInstance(){
-        if(redisUtils==null)
-            synchronized (RedisUtils.class) {
-                if(redisUtils==null) redisUtils=new RedisUtils();
-            }
-        return redisUtils;
     }
 
+    private static class RedisUtilsHolder {
+        private static RedisUtils instance = new RedisUtils();
+    }
 
-    /**
-     * 使用config创建Redisson
-     * Redisson是用于连接Redis Server的基础类
-     * @return
-     */
-    public RedissonClient getRedisson(){
-
-        try {
-            if(redissonClient == null) {
-                //单点方式创建redission
-                File file = FilePathUtil.getFile(PRE_CONFIG + SINGLE_MODE);
-                Config config = new Config(Config.fromYAML(file));
-                synchronized(RedisUtils.class) {
-                    redissonClient = Redisson.create(config);
-                }
-                logger.info("成功连接Redis Server");
-            }
-        } catch (IOException e) {
-            logger.error("连接Redis Server失败" + e);
-            return null;
-        } finally {
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                @Override
-                public void run() {
-                    if(redissonClient != null) {
-                        redissonClient.shutdown();
-                        logger.info("关闭Redis Server连接");
-                    }
-                }
-            });
-        }
-        return redissonClient;
+    public static RedisUtils getInstance() {
+        return RedisUtilsHolder.instance;
     }
 
     /**
