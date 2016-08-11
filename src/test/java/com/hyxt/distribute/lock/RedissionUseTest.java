@@ -1,12 +1,10 @@
 package com.hyxt.distribute.lock;
 
+import com.hyxt.distribute.lock.base.LockThreadBadRequest;
 import com.hyxt.distribute.lock.base.LockThreadRequest;
 import com.hyxt.distribute.lock.base.RedissionBaseTest;
 import org.junit.Test;
-import org.redisson.core.RDeque;
-import org.redisson.core.RList;
-import org.redisson.core.RQueue;
-import org.redisson.core.RSet;
+import org.redisson.core.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,7 +23,10 @@ public class RedissionUseTest extends RedissionBaseTest {
         for(int i = 0 ; i < 100; i ++) {
             String threadNo = "T" + (i%10) + "-" + i;
             LockThreadRequest request = new LockThreadRequest(threadNo,redissonClient);
+            LockThreadBadRequest badRequest = new LockThreadBadRequest(threadNo,redissonClient);
+
             reqs.add(request);
+            reqs.add(badRequest);
         }
         int i = 0 ;
         for (LockThreadRequest req : reqs) {
@@ -117,6 +118,22 @@ public class RedissionUseTest extends RedissionBaseTest {
         //倒序输出
         while (descendingIterator.hasNext()) {
             System.out.println(descendingIterator.next());
+        }
+    }
+
+    @Test
+    public void testRedisLock (){
+        try {
+            long begin = System.currentTimeMillis();
+            RLock lock = RedisLock.lock("ZHI", "GW");
+            System.out.println("获取锁成功");
+            Thread.sleep(100);
+            RedisLock.unlock(lock);
+            System.out.println("释放锁成功");
+            long end = System.currentTimeMillis();
+            System.out.println("用时:" + (end - begin));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

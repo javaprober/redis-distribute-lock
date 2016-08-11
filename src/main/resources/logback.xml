@@ -15,9 +15,9 @@
 	</appender>
 	<appender name="file"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>/logs/redis-lock/redis-lock.log</file>
+		<file>/www/logs/redis-lock/redis-lock.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<FileNamePattern>/logs/redis-lock/redis-lock.%d{yyyy-MM-dd}.log
+			<FileNamePattern>/www/logs/redis-lock/redis-lock.%d{yyyy-MM-dd}.log
 			</FileNamePattern>
 		</rollingPolicy>
 		<encoder>

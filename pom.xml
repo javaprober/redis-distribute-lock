@@ -11,7 +11,7 @@
 
 
     <properties>
-        <redisson.version>2.2.15</redisson.version>
+        <redisson.version>2.2.24</redisson.version>
         <log4j.version>1.2.16</log4j.version>
         <logback.version>1.1.2</logback.version>
     </properties>

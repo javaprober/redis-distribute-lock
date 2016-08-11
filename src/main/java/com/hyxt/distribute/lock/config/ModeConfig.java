@@ -22,4 +22,8 @@ public interface ModeConfig {
 
     //single mode
     public static final String SINGLE_MODE = "singleServerConfig.yml";
+
+    //base config
+    public static final String BASE_CONFIG ="base_config";
+
 }

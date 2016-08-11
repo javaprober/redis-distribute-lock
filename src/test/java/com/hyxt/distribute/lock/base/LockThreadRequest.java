@@ -14,7 +14,7 @@ public class LockThreadRequest extends Thread{
 
     RedissonClient redissonClient;
 
-    static int i = 0 ;
+    public static int i = 0 ;
 
     public LockThreadRequest(String name, RedissonClient redissonClient) {
         super();
@@ -28,7 +28,7 @@ public class LockThreadRequest extends Thread{
         RedisUtils.getInstance().getRLock(redissonClient,name);
         RLock lock = redissonClient.getLock(name);
         try {
-            lock.tryLock(100, 1, TimeUnit.SECONDS);//第一个参数代表等待时间，第二是代表超过时间释放锁，第三个代表设置的时间制
+            lock.tryLock(100, 0, TimeUnit.SECONDS);//第一个参数代表等待时间，第二是代表超过时间释放锁，第三个代表设置的时间制
             i ++;
             long end = System.currentTimeMillis();
             System.out.println("执行" + "-" + name + "执行时间:" + (end - begin) + "毫秒,操作i值为:" + i );

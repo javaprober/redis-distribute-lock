@@ -1,6 +1,6 @@
 package com.hyxt.distribute.lock.base;
 
-import com.hyxt.distribute.lock.client.RedisClientHandler;
+import com.hyxt.distribute.lock.RedisLockInstance;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.redisson.Config;
@@ -20,7 +20,7 @@ public class RedissionBaseTest extends TestCase{
         SingleServerConfig singleSerververConfig = config.useSingleServer();
         singleSerververConfig.setAddress("127.0.0.1:6379");
         //redisson客户端
-        redissonClient = RedisClientHandler.Factory.redissonClient;
+        redissonClient = RedisLockInstance.getClient();
     }
 
     @Test

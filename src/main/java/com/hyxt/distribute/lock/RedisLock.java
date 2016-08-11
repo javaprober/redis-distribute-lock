@@ -1,6 +1,6 @@
 package com.hyxt.distribute.lock;
 
-import com.hyxt.distribute.lock.client.RedisClientHandler;
+import com.hyxt.distribute.lock.util.PropertyUtils;
 import com.hyxt.distribute.lock.util.RedisUtils;
 import org.redisson.RedissonClient;
 import org.redisson.core.RLock;
@@ -24,7 +24,19 @@ public class RedisLock {
      * @return RLock
      */
     public static RLock lock(String appNo,String bizNo) throws InterruptedException {
-        return lock(appNo,bizNo,1000,1000);
+        String waitTimeStr = PropertyUtils.getPropertyString("base_config", "redis.lock.default.waittime");
+        String releaseTimeStr = PropertyUtils.getPropertyString("base_config", "redis.lock.default.timeout");
+
+        if(waitTimeStr == null || "".equals(waitTimeStr)) {
+            //默认等待1秒
+            waitTimeStr = "1000";
+        }
+        if(releaseTimeStr == null || "".equals(releaseTimeStr)) {
+            //默认1秒超时释放
+            releaseTimeStr = "1000";
+        }
+
+        return lock(appNo,bizNo, Integer.parseInt(waitTimeStr),Integer.parseInt(releaseTimeStr));
     }
 
     /**
@@ -32,15 +44,16 @@ public class RedisLock {
      * @param appNo application 唯一编号
      * @param bizNo 业务场景唯一编号
      * @param waitTime 获取锁等待时间/毫秒
-     * @param timeout  超过timeout时间释放锁/毫秒
+     * @param releaseTime  超过releaseTime时间释放锁/毫秒
      * @return RLock
      */
-    public static RLock lock(String appNo,String bizNo ,int waitTime ,int timeout) throws InterruptedException {
-        RedissonClient client = RedisClientHandler.Factory.redissonClient;
+    public static RLock lock(String appNo,String bizNo ,int waitTime ,int releaseTime) throws InterruptedException {
+        RedissonClient client = RedisLockInstance.getClient();
         RedisUtils redisUtils = RedisUtils.getInstance();
-        RLock rLock = redisUtils.getRLock(client, appNo + "_" + bizNo);
+        RLock rLock = null;
         try {
-            rLock.tryLock(waitTime,timeout, TimeUnit.MILLISECONDS);
+            rLock = redisUtils.getRLock(client, appNo + "_" + bizNo);
+            rLock.tryLock(waitTime,releaseTime, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             logger.error("获取锁异常:" + e);
             throw e;
@@ -54,6 +67,9 @@ public class RedisLock {
      *
      */
     public static void unlock(RLock lock) {
-        lock.unlock();
+        if(lock != null) {
+            lock.unlock();
+        }
+        lock = null;
     }
 }
