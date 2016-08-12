@@ -1,9 +1,12 @@
 package com.hyxt.distribute.lock.util;
 
+import com.hyxt.distribute.lock.config.ModeConfig;
+import org.redisson.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -13,13 +16,13 @@ public class FilePathUtil {
 
     private static Logger logger = LoggerFactory.getLogger(FilePathUtil.class);
 
-    public static File getFile(String filePath) {
+    public static InputStream getFile(String filePath) {
 
         if(filePath.startsWith("/")) {
             try {
-                File file = new File(filePath);
-                if (file != null && file.exists()) {
-                    return file;
+                InputStream resourceAsStream = FilePathUtil.class.getResourceAsStream(filePath);
+                if(resourceAsStream != null) {
+                    return resourceAsStream;
                 }
             } catch (Throwable e) {
                 logger.warn("Failed to load " + filePath + " file from "
@@ -31,7 +34,7 @@ public class FilePathUtil {
             URL resource = ClassHelpUtil.getClassLoader()
                     .getResource(filePath);
             if(resource != null) {
-                return new File(resource.getFile());
+                return resource.openStream();
             }
         } catch (Throwable t) {
             logger.warn(
@@ -39,5 +42,11 @@ public class FilePathUtil {
         }
         
         return null;
+    }
+
+    public static void main(String[] args) throws IOException {
+        InputStream inputStream = getFile("/" + ModeConfig.PRE_CONFIG + ModeConfig.SENTINEL_MODE);
+        Config config = new Config(Config.fromYAML(inputStream));
+        System.out.println(config);
     }
 }

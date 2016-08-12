@@ -20,8 +20,9 @@ public class RedissionUseTest extends RedissionBaseTest {
     public void testPressureMutiThreadRequest() {
 
         List<LockThreadRequest> reqs = new ArrayList<LockThreadRequest>();
-        for(int i = 0 ; i < 100; i ++) {
-            String threadNo = "T" + (i%10) + "-" + i;
+        for(int i = 0 ; i < 1000; i ++) {
+            System.out.println("线程:" + i );
+            String threadNo = "test";
             LockThreadRequest request = new LockThreadRequest(threadNo,redissonClient);
             LockThreadBadRequest badRequest = new LockThreadBadRequest(threadNo,redissonClient);
 
@@ -30,8 +31,7 @@ public class RedissionUseTest extends RedissionBaseTest {
         }
         int i = 0 ;
         for (LockThreadRequest req : reqs) {
-            System.out.println("");
-            req.run();
+            req.start();
         }
         reqs = null;
     }

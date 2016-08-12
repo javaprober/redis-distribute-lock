@@ -10,8 +10,8 @@ import org.redisson.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,8 +68,8 @@ public interface RedisClientHandler {
         public RedissonClient buildRedissonClient() {
             try {
                 String configFilePath = modeConfigPath.get(mode);
-                File file = FilePathUtil.getFile(configFilePath);
-                Config config = new Config(Config.fromYAML(file));
+                InputStream inputStream = FilePathUtil.getFile(configFilePath);
+                Config config = new Config(Config.fromYAML(inputStream));
                 synchronized (Factory.class) {
                     redissonClient = Redisson.create(config);
                 }
@@ -77,7 +77,7 @@ public interface RedisClientHandler {
             } catch (IOException e) {
                 logger.error("连接Redis Server失败" + e);
             } finally {
-                Runtime.getRuntime().addShutdownHook(new Thread() {
+                /*Runtime.getRuntime().addShutdownHook(new Thread() {
                     @Override
                     public void run() {
                         if (redissonClient != null) {
@@ -85,7 +85,7 @@ public interface RedisClientHandler {
                             logger.info("关闭Redis Server连接");
                         }
                     }
-                });
+                });*/
             }
             return redissonClient;
         }
