@@ -48,12 +48,20 @@ public class RedisLock {
      * @return RLock
      */
     public static RLock lock(String appNo,String bizNo ,int waitTime ,int releaseTime) throws InterruptedException {
+
+
         RedissonClient client = RedisLockInstance.getClient();
         RedisUtils redisUtils = RedisUtils.getInstance();
         RLock rLock = null;
         try {
-            rLock = redisUtils.getRLock(client, appNo + "_" + bizNo);
-            rLock.tryLock(waitTime,releaseTime, TimeUnit.MILLISECONDS);
+            String reqTag = appNo + "_" + bizNo;
+            rLock = redisUtils.getRLock(client,reqTag);
+            boolean hasLock = rLock.tryLock(waitTime, releaseTime, TimeUnit.MILLISECONDS);
+//            boolean hasLock = rLock.tryLock();
+            if(!hasLock) {
+                logger.error("获取锁失败");
+                throw new InterruptedException("获取锁失败");
+            }
         } catch (InterruptedException e) {
             logger.error("获取锁异常:" + e);
             throw e;

@@ -1,34 +1,45 @@
 package com.hyxt.distribute.lock.base;
 
 import com.hyxt.distribute.lock.RedisLockInstance;
-import junit.framework.TestCase;
-import org.junit.Test;
-import org.redisson.Config;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.redisson.RedissonClient;
-import org.redisson.SingleServerConfig;
+
+import java.io.IOException;
 
 /**
  * Created by andy on 2016/8/9.
  */
-public class RedissionBaseTest extends TestCase{
+public abstract class RedissionBaseTest{
 
-    protected RedissonClient redissonClient;
+    protected RedissonClient redisson;
+    protected static RedissonClient defaultRedisson;
 
-    public void setUp() {
-        System.out.println("1s");
-        Config config = new Config();
-        SingleServerConfig singleSerververConfig = config.useSingleServer();
-        singleSerververConfig.setAddress("127.0.0.1:6379");
-        //redisson客户端
-        redissonClient = RedisLockInstance.getClient();
+    @BeforeClass
+    public static void beforeClass() throws IOException, InterruptedException {
+        defaultRedisson = createInstance();
     }
 
-    @Test
-    public void testNN() {
-
+    @AfterClass
+    public static void afterClass() throws IOException, InterruptedException {
+        defaultRedisson.shutdown();
     }
 
-    public void tearDown() {
-//        RedisUtils.getInstance().closeRedisson(redissonClient);
+    @Before
+    public void before() throws IOException, InterruptedException {
+        if (redisson == null) {
+            redisson = defaultRedisson;
+        }
+    }
+
+    @After
+    public void after() throws InterruptedException {
+        redisson.shutdown();
+    }
+
+    public static RedissonClient createInstance() {
+        return RedisLockInstance.getClient();
     }
 }

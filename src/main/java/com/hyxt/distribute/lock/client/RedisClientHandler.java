@@ -65,6 +65,7 @@ public interface RedisClientHandler {
             return intern.interned(ClusterMode.SINGLE_INSTANCE);
         }
 
+
         public RedissonClient buildRedissonClient() {
             try {
                 String configFilePath = modeConfigPath.get(mode);
@@ -76,8 +77,8 @@ public interface RedisClientHandler {
                 logger.info("成功连接Redis Server");
             } catch (IOException e) {
                 logger.error("连接Redis Server失败" + e);
-            } finally {
-                /*Runtime.getRuntime().addShutdownHook(new Thread() {
+            } /*finally {
+                Runtime.getRuntime().addShutdownHook(new Thread() {
                     @Override
                     public void run() {
                         if (redissonClient != null) {
@@ -85,8 +86,8 @@ public interface RedisClientHandler {
                             logger.info("关闭Redis Server连接");
                         }
                     }
-                });*/
-            }
+                });
+            }*/
             return redissonClient;
         }
     }

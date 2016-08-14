@@ -1,8 +1,8 @@
 package com.hyxt.distribute.lock;
 
-import com.hyxt.distribute.lock.base.LockThreadBadRequest;
 import com.hyxt.distribute.lock.base.LockThreadRequest;
 import com.hyxt.distribute.lock.base.RedissionBaseTest;
+import org.junit.Assert;
 import org.junit.Test;
 import org.redisson.core.*;
 
@@ -20,26 +20,21 @@ public class RedissionUseTest extends RedissionBaseTest {
     public void testPressureMutiThreadRequest() {
 
         List<LockThreadRequest> reqs = new ArrayList<LockThreadRequest>();
-        for(int i = 0 ; i < 1000; i ++) {
-            System.out.println("线程:" + i );
+        for(int i = 0 ; i < 100; i ++) {
             String threadNo = "test";
-            LockThreadRequest request = new LockThreadRequest(threadNo,redissonClient);
-            LockThreadBadRequest badRequest = new LockThreadBadRequest(threadNo,redissonClient);
-
+            LockThreadRequest request = new LockThreadRequest(threadNo, redisson);
             reqs.add(request);
-            reqs.add(badRequest);
         }
-        int i = 0 ;
         for (LockThreadRequest req : reqs) {
             req.start();
         }
-        reqs = null;
+//        reqs = null;
     }
 
     @Test
     public void testRedisOperate() {
         // Set测试
-        RSet<String> mySet = redissonClient.getSet("mySet");
+        RSet<String> mySet = redisson.getSet("mySet");
         if (mySet != null) {
             mySet.clear();
         }
@@ -47,7 +42,7 @@ public class RedissionUseTest extends RedissionBaseTest {
         mySet.add("2");
         mySet.add("3");
 
-        RSet<String> mySetCache = redissonClient.getSet("mySet");
+        RSet<String> mySetCache = redisson.getSet("mySet");
 
         for (String s : mySetCache) {
             System.out.println(s);
@@ -56,7 +51,7 @@ public class RedissionUseTest extends RedissionBaseTest {
         System.out.println("--------------------");
 
         // List测试
-        RList<Object> myList = redissonClient.getList("myList");
+        RList<Object> myList = redisson.getList("myList");
         if (myList != null) {
             myList.clear();
         }
@@ -65,7 +60,7 @@ public class RedissionUseTest extends RedissionBaseTest {
         myList.add("b");
         myList.add("c");
 
-        RList<Object> myListCache = redissonClient.getList("myList");
+        RList<Object> myListCache = redisson.getList("myList");
 
         for (Object bean : myListCache) {
             System.out.println(bean);
@@ -74,7 +69,7 @@ public class RedissionUseTest extends RedissionBaseTest {
         System.out.println("--------------------");
 
         //Queue测试
-        RQueue<String> myQueue = redissonClient.getQueue("myQueue");
+        RQueue<String> myQueue = redisson.getQueue("myQueue");
         if (myQueue != null) {
             myQueue.clear();
         }
@@ -82,7 +77,7 @@ public class RedissionUseTest extends RedissionBaseTest {
         myQueue.add("Y");
         myQueue.add("Z");
 
-        RQueue<String> myQueueCache = redissonClient.getQueue("myQueue");
+        RQueue<String> myQueueCache = redisson.getQueue("myQueue");
 
         for (String s : myQueueCache) {
             System.out.println(s);
@@ -103,7 +98,7 @@ public class RedissionUseTest extends RedissionBaseTest {
         System.out.println("--------------------");
 
         //Deque测试
-        RDeque<String> myDeque = redissonClient.getDeque("myDeque");
+        RDeque<String> myDeque = redisson.getDeque("myDeque");
         if (myDeque != null) {
             myDeque.clear();
         }
@@ -111,7 +106,7 @@ public class RedissionUseTest extends RedissionBaseTest {
         myDeque.add("B");
         myDeque.add("C");
 
-        RDeque<String> myDequeCache = redissonClient.getDeque("myDeque");
+        RDeque<String> myDequeCache = redisson.getDeque("myDeque");
 
         Iterator<String> descendingIterator = myDequeCache.descendingIterator();
 
@@ -135,5 +130,32 @@ public class RedissionUseTest extends RedissionBaseTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testRedissonLock() throws InterruptedException {
+        RLock lock = redisson.getLock("lock");
+        lock.lock();
+
+        Thread t = new Thread() {
+            public void run() {
+                RLock lock = redisson.getLock("lock");
+                Assert.assertTrue(lock.isLocked());
+            };
+        };
+
+        t.start();
+        t.join();
+        lock.unlock();
+
+        Thread t2 = new Thread() {
+            public void run() {
+                RLock lock = redisson.getLock("lock");
+                Assert.assertFalse(lock.isLocked());
+            };
+        };
+
+        t2.start();
+        t2.join();
     }
 }

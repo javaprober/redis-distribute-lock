@@ -1,7 +1,6 @@
 package com.hyxt.distribute.lock;
 
 import com.hyxt.distribute.lock.util.PropertyUtils;
-import junit.framework.TestCase;
 import org.junit.Test;
 
 /**
