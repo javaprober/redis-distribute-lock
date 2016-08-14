@@ -1,4 +1,4 @@
-package com.hyxt.distribute.lock;
+package com.hyxt.distribute.lock.client;
 
 /**
  * Created by andy on 2016/8/10.

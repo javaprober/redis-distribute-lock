@@ -26,7 +26,7 @@ public class RedissionUseTest extends RedissionBaseTest {
             reqs.add(request);
         }
         for (LockThreadRequest req : reqs) {
-            req.start();
+            req.run();
         }
 //        reqs = null;
     }

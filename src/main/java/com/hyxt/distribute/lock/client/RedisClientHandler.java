@@ -1,6 +1,5 @@
 package com.hyxt.distribute.lock.client;
 
-import com.hyxt.distribute.lock.ClusterMode;
 import com.hyxt.distribute.lock.config.ModeConfig;
 import com.hyxt.distribute.lock.util.FilePathUtil;
 import com.hyxt.distribute.lock.util.InternMap;
