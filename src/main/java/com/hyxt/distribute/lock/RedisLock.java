@@ -49,7 +49,7 @@ public class RedisLock {
         RedissonClient client = RedisLockInstance.getClient();
         RLock rLock = null;
         try {
-            String reqTag = appNo + "_" + bizNo;
+            String reqTag = getLockName(appNo,bizNo);
             rLock = client.getLock(reqTag);
             if(rLock == null ||  rLock.isHeldByCurrentThread() || rLock.isLocked()) {
                 logger.error("Lock is null or lock has been occupied ");
@@ -85,7 +85,7 @@ public class RedisLock {
         RedissonClient client = RedisLockInstance.getClient();
         RLock rLock = null;
         try {
-            String reqTag = appNo + "_" + bizNo;
+            String reqTag = getLockName(appNo,bizNo);;
             rLock = client.getLock(reqTag);
             if(rLock == null ||  rLock.isHeldByCurrentThread() || rLock.isLocked()) {
                 logger.error("Lock is null or lock has been occupied");
@@ -119,5 +119,17 @@ public class RedisLock {
             logger.error("Failed to obtain a lock,exception:{}" , e);
         }
 
+    }
+
+
+    private static String getLockName(String appNo,String bizNo) {
+        if(appNo == null || "".equals(appNo)) {
+            appNo = "redisson";
+        }
+
+        if(bizNo == null || "".equals(bizNo)) {
+            bizNo = "applicationLock";
+        }
+        return appNo + "_" + bizNo;
     }
 }
