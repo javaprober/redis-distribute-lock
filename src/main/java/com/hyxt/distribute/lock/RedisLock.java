@@ -1,7 +1,6 @@
 package com.hyxt.distribute.lock;
 
 import com.hyxt.distribute.lock.util.PropertyUtils;
-import com.hyxt.distribute.lock.util.RedisUtils;
 import org.redisson.RedissonClient;
 import org.redisson.core.RLock;
 import org.slf4j.Logger;
@@ -24,19 +23,8 @@ public class RedisLock {
      * @return RLock
      */
     public static RLock lock(String appNo,String bizNo) throws InterruptedException {
-        String waitTimeStr = PropertyUtils.getPropertyString("base_config", "redis.lock.default.waittime");
-        String releaseTimeStr = PropertyUtils.getPropertyString("base_config", "redis.lock.default.timeout");
 
-        if(waitTimeStr == null || "".equals(waitTimeStr)) {
-            //默认等待1秒
-            waitTimeStr = "1000";
-        }
-        if(releaseTimeStr == null || "".equals(releaseTimeStr)) {
-            //默认1秒超时释放
-            releaseTimeStr = "1000";
-        }
-
-        return lock(appNo,bizNo, Integer.parseInt(waitTimeStr),Integer.parseInt(releaseTimeStr));
+        return lock(appNo,bizNo, null,null);
     }
 
     /**
@@ -47,27 +35,74 @@ public class RedisLock {
      * @param releaseTime  超过releaseTime时间释放锁/毫秒
      * @return RLock
      */
-    public static RLock lock(String appNo,String bizNo ,int waitTime ,int releaseTime) throws InterruptedException {
-
-
+    public static RLock lock(String appNo,String bizNo ,Integer waitTime ,Integer releaseTime) throws InterruptedException {
+        String waitTimeStr = PropertyUtils.getPropertyString("base_config", "redis.lock.default.waittime");
+        String releaseTimeStr = PropertyUtils.getPropertyString("base_config", "redis.lock.default.timeout");
+        if(waitTime == null || waitTime <= 0) {
+            //默认等待1秒
+            waitTime = Integer.parseInt(waitTimeStr);
+        }
+        if(releaseTime == null || releaseTime <= 0) {
+            //默认1秒超时释放
+            releaseTime = Integer.parseInt(releaseTimeStr);
+        }
         RedissonClient client = RedisLockInstance.getClient();
-        RedisUtils redisUtils = RedisUtils.getInstance();
         RLock rLock = null;
         try {
             String reqTag = appNo + "_" + bizNo;
-            rLock = redisUtils.getRLock(client,reqTag);
+            rLock = client.getLock(reqTag);
+            if(rLock == null ||  rLock.isHeldByCurrentThread() || rLock.isLocked()) {
+                logger.error("Lock is null or lock has been occupied ");
+                throw new InterruptedException("Failed to obtain a lock");
+            }
             boolean hasLock = rLock.tryLock(waitTime, releaseTime, TimeUnit.MILLISECONDS);
-//            boolean hasLock = rLock.tryLock();
             if(!hasLock) {
-                logger.error("获取锁失败");
-                throw new InterruptedException("获取锁失败");
+                logger.error("Failed to obtain a lock");
+                throw new InterruptedException("Failed to obtain a lock");
             }
         } catch (InterruptedException e) {
-            logger.error("获取锁异常:" + e);
+            logger.error("Failed to obtain a lock ,exception:{}" , e);
             throw e;
         }
         return rLock;
     }
+
+    /**
+     * 加锁
+     * @param appNo application 唯一编号
+     * @param bizNo 业务场景唯一编号
+     * @param waitTime 获取锁等待时间/毫秒
+     * @return RLock
+     */
+    public static RLock lock(String appNo,String bizNo ,Integer waitTime) throws InterruptedException {
+
+        String waitTimeStr = PropertyUtils.getPropertyString("base_config", "redis.lock.default.waittime");
+        if(waitTime == null || waitTime <= 0) {
+            //默认等待1秒
+            waitTime = Integer.parseInt(waitTimeStr);
+        }
+
+        RedissonClient client = RedisLockInstance.getClient();
+        RLock rLock = null;
+        try {
+            String reqTag = appNo + "_" + bizNo;
+            rLock = client.getLock(reqTag);
+            if(rLock == null ||  rLock.isHeldByCurrentThread() || rLock.isLocked()) {
+                logger.error("Lock is null or lock has been occupied");
+                return null;
+            }
+            boolean hasLock = rLock.tryLock(waitTime, TimeUnit.MILLISECONDS);
+            if(!hasLock) {
+                logger.error("Failed to obtain a lock");
+                throw new InterruptedException("Failed to obtain a lock");
+            }
+        } catch (InterruptedException e) {
+            logger.error("Failed to obtain a lock,exception:{}" , e);
+            throw e;
+        }
+        return rLock;
+    }
+
 
     /**
      * 解锁
@@ -75,9 +110,14 @@ public class RedisLock {
      *
      */
     public static void unlock(RLock lock) {
-        if(lock != null) {
-            lock.unlock();
+        try{
+            if (lock != null) {
+                lock.unlock();
+            }
+            lock = null;
+        } catch(Exception e) {
+            logger.error("Failed to obtain a lock,exception:{}" , e);
         }
-        lock = null;
+
     }
 }
