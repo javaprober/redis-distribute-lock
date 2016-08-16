@@ -35,7 +35,8 @@ public class RedisLock {
      * @param releaseTime  超过releaseTime时间释放锁/毫秒
      * @return RLock
      */
-    public static RLock lock(String appNo,String bizNo ,Integer waitTime ,Integer releaseTime) throws InterruptedException {
+    public static RLock lock(String appNo,String bizNo
+            ,Integer waitTime ,Integer releaseTime) throws InterruptedException {
         String waitTimeStr = PropertyUtils.getPropertyString("base_config", "redis.lock.default.waittime");
         String releaseTimeStr = PropertyUtils.getPropertyString("base_config", "redis.lock.default.timeout");
         if(waitTime == null || waitTime <= 0) {
@@ -51,10 +52,10 @@ public class RedisLock {
         try {
             String reqTag = getLockName(appNo,bizNo);
             rLock = client.getLock(reqTag);
-            if(rLock == null ||  rLock.isHeldByCurrentThread() || rLock.isLocked()) {
+            /*if(rLock == null ||  rLock.isHeldByCurrentThread() || rLock.isLocked()) {
                 logger.error("Lock is null or lock has been occupied ");
                 throw new InterruptedException("Failed to obtain a lock");
-            }
+            }*/
             boolean hasLock = rLock.tryLock(waitTime, releaseTime, TimeUnit.MILLISECONDS);
             if(!hasLock) {
                 logger.error("Failed to obtain a lock");
@@ -87,10 +88,10 @@ public class RedisLock {
         try {
             String reqTag = getLockName(appNo,bizNo);;
             rLock = client.getLock(reqTag);
-            if(rLock == null ||  rLock.isHeldByCurrentThread() || rLock.isLocked()) {
+            /*if(rLock == null ||  rLock.isHeldByCurrentThread() || rLock.isLocked()) {
                 logger.error("Lock is null or lock has been occupied");
                 return null;
-            }
+            }*/
             boolean hasLock = rLock.tryLock(waitTime, TimeUnit.MILLISECONDS);
             if(!hasLock) {
                 logger.error("Failed to obtain a lock");
@@ -118,7 +119,6 @@ public class RedisLock {
         } catch(Exception e) {
             logger.error("Failed to obtain a lock,exception:{}" , e);
         }
-
     }
 
 
