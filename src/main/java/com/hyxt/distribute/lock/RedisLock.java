@@ -58,7 +58,7 @@ public class RedisLock {
             rLock = lockMap.get(reqTag);
             if(rLock == null) {
                 rLock = client.getLock(reqTag);
-                lockMap.put(reqTag,rLock);
+                rLock = lockMap.putIfAbsent(reqTag,rLock);
             }
             /*if(rLock == null ||  rLock.isHeldByCurrentThread() || rLock.isLocked()) {
                 logger.error("Lock is null or lock has been occupied ");
@@ -98,7 +98,7 @@ public class RedisLock {
             rLock = lockMap.get(reqTag);
             if(rLock == null) {
                 rLock = client.getLock(reqTag);
-                lockMap.put(reqTag,rLock);
+                rLock = lockMap.putIfAbsent(reqTag,rLock);
             }
             /*if(rLock == null ||  rLock.isHeldByCurrentThread() || rLock.isLocked()) {
                 logger.error("Lock is null or lock has been occupied");
