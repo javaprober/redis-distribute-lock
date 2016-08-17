@@ -6,6 +6,8 @@ import org.redisson.core.RLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -15,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 public class RedisLock {
 
     private static Logger logger= LoggerFactory.getLogger(RedisLock.class);
+
+    private final static ConcurrentMap<String,RLock> lockMap = new ConcurrentHashMap<String,RLock>();
 
     /**
      * 加锁
@@ -51,7 +55,11 @@ public class RedisLock {
         RLock rLock = null;
         try {
             String reqTag = getLockName(appNo,bizNo);
-            rLock = client.getLock(reqTag);
+            rLock = lockMap.get(reqTag);
+            if(rLock == null) {
+                rLock = client.getLock(reqTag);
+                lockMap.put(reqTag,rLock);
+            }
             /*if(rLock == null ||  rLock.isHeldByCurrentThread() || rLock.isLocked()) {
                 logger.error("Lock is null or lock has been occupied ");
                 throw new InterruptedException("Failed to obtain a lock");
@@ -87,7 +95,11 @@ public class RedisLock {
         RLock rLock = null;
         try {
             String reqTag = getLockName(appNo,bizNo);;
-            rLock = client.getLock(reqTag);
+            rLock = lockMap.get(reqTag);
+            if(rLock == null) {
+                rLock = client.getLock(reqTag);
+                lockMap.put(reqTag,rLock);
+            }
             /*if(rLock == null ||  rLock.isHeldByCurrentThread() || rLock.isLocked()) {
                 logger.error("Lock is null or lock has been occupied");
                 return null;
