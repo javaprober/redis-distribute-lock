@@ -1,9 +1,5 @@
 package com.hyxt.distribute.lock.queue;
 
-import com.hyxt.distribute.lock.RedisLockInstance;
-import org.redisson.RedissonClient;
-import org.redisson.core.RLock;
-
 import java.util.concurrent.*;
 
 /**
@@ -21,8 +17,8 @@ public class RequestQueueExecutor {
             }
         }));
     }*/
-    private static BlockingQueue<String> queue = new ArrayBlockingQueue<String>(10000);
-    private static CompletionService<RLock> completionServ = new ExecutorCompletionService<RLock>(executor);
+    private static BlockingQueue<String> queue = new ArrayBlockingQueue<String>(100);
+    private static CompletionService<String> completionServ = new ExecutorCompletionService<>(executor);
 
     private static class Producer implements Runnable{
         String reqTag;
@@ -40,26 +36,24 @@ public class RequestQueueExecutor {
         }
     }
 
-    private static class Consumer implements Callable<RLock> {
+    private static class Consumer implements Callable<String> {
 
-        public RLock call() {
-            RedissonClient client = RedisLockInstance.getClient();
-            RLock lock = null;
+        public String call() throws InterruptedException {
             try {
                 String name = queue.take();
-                lock = client.getLock(name);
-                lock.lock(10, TimeUnit.SECONDS);
+                return name;
             } catch (InterruptedException ex) {
+                throw ex;
             }
-            return lock;
+
         }
     }
 
-    public static RLock getRLock(String reqTag) {
+    public static String getName(String reqTag) {
         executor.submit(new Producer(reqTag));
         System.out.println("线程池待处理:" + queue.size());
-        Future<RLock> result = completionServ.submit(new Consumer());
         try {
+            Future<String> result = completionServ.submit(new Consumer());
             return result.get();
         } catch (InterruptedException e) {
             e.printStackTrace();
