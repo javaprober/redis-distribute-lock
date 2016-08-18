@@ -1,12 +1,23 @@
 package com.hyxt.distribute.lock.queue;
 
+import com.hyxt.distribute.lock.RedisLockInstance;
+import org.redisson.RedissonClient;
+import org.redisson.core.RLock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.*;
 
 /**
+ * 无须排队
  * Created by apple on 16/8/12.
  */
 public class RequestQueueExecutor {
-    private static ExecutorService executor = Executors.newCachedThreadPool();
+
+    private static Logger logger= LoggerFactory.getLogger(RequestQueueExecutor.class);
+    public final static ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final static ConcurrentMap<String,RLock> lockMap = new ConcurrentHashMap<String,RLock>();
+    private final static Integer waitTime = 10000;
 //    private static ExecutorService executor = Executors.newFixedThreadPool(10000);
     /*static {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
@@ -17,10 +28,11 @@ public class RequestQueueExecutor {
             }
         }));
     }*/
-    private static BlockingQueue<String> queue = new ArrayBlockingQueue<String>(100);
-    private static CompletionService<String> completionServ = new ExecutorCompletionService<>(executor);
+    public final static BlockingQueue<String> queue = new LinkedBlockingDeque<>(100);
+    public final static CompletionService<RLock> completionServ = new ExecutorCompletionService<RLock>(executor);
+    private final static CompletionService<String> completionServReq = new ExecutorCompletionService<String>(executor);
 
-    private static class Producer implements Runnable{
+    public static class Producer implements Runnable{
         String reqTag;
 
         public Producer(String reqTag){
@@ -36,24 +48,67 @@ public class RequestQueueExecutor {
         }
     }
 
-    private static class Consumer implements Callable<String> {
+    public static class ConsumerReq implements Callable<String> {
 
-        public String call() throws InterruptedException {
+        @Override
+        public String call() throws Exception {
+            String reqTag = null;
             try {
-                String name = queue.take();
-                return name;
-            } catch (InterruptedException ex) {
-                throw ex;
+                reqTag = queue.take();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-
+            return reqTag;
         }
     }
 
-    public static String getName(String reqTag) {
+    public static class Consumer implements Callable<RLock> {
+
+        public RLock call() {
+            String reqTag = null;
+            try {
+                reqTag = queue.take();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            RedissonClient client = RedisLockInstance.getClient();
+            RLock rLock = null;
+            try {
+                rLock = lockMap.get(reqTag);
+                if(rLock == null) {
+                    rLock = client.getLock(reqTag);
+                    lockMap.put(reqTag,rLock);
+                }
+                boolean hasLock = rLock.tryLock(waitTime, TimeUnit.MILLISECONDS);
+                if(!hasLock) {
+                    logger.error("Failed to obtain a lock ");
+                }
+            } catch (InterruptedException ex) {
+                logger.error("Failed to obtain a lock ,exception:{}" + ex);
+            }
+            return rLock;
+        }
+    }
+
+    public static String getReqTag(String reqTag) {
         executor.submit(new Producer(reqTag));
         System.out.println("线程池待处理:" + queue.size());
+        Future<String> result = completionServReq.submit(new ConsumerReq());
         try {
-            Future<String> result = completionServ.submit(new Consumer());
+            return result.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static RLock getRLock(String reqTag) {
+        executor.submit(new Producer(reqTag));
+        System.out.println("线程池待处理:" + queue.size());
+        Future<RLock> result = completionServ.submit(new Consumer());
+        try {
             return result.get();
         } catch (InterruptedException e) {
             e.printStackTrace();
