@@ -3,6 +3,8 @@ package com.hyxt.distribute.lock;
 import org.junit.Test;
 import org.redisson.core.RLock;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * Created by andy on 2016/8/9.
  */
@@ -21,6 +23,8 @@ public class RedissionUseTest  {
             long end = System.currentTimeMillis();
             System.out.println("用时:" + (end - begin));
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
     }

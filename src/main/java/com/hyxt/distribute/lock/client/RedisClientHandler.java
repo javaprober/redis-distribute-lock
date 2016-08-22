@@ -60,7 +60,7 @@ public interface RedisClientHandler {
                 });
 
         public RedissonClient asMode() {
-            //单例模式
+            //single单机模式
             return intern.interned(ClusterMode.SINGLE_INSTANCE);
         }
 

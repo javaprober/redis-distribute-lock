@@ -117,4 +117,20 @@ public class RequestQueueExecutor {
         }
         return null;
     }
+
+    public static void main(String[] args) {
+        /*
+        RequestQueueExecutor.executor.submit(new RequestQueueExecutor.Producer(lockName));
+        System.out.println("线程池待处理:" + RequestQueueExecutor.queue.size());
+        Future<RLock> result = RequestQueueExecutor.completionServ.submit(new RequestQueueExecutor.Consumer());
+        try {
+            return result.get();
+        } catch (InterruptedException e) {
+            throw e;
+        } catch (ExecutionException e) {
+            throw e;
+        }
+        return lock(lockName);
+        */
+    }
 }
