@@ -73,9 +73,9 @@ public interface RedisClientHandler {
                 synchronized (Factory.class) {
                     redissonClient = Redisson.create(config);
                 }
-                logger.info("Connect redis server success");
+//                logger.info("Connect redis server success");
             } catch (IOException e) {
-                logger.error("Connect redis server fail, exception:{}",e);
+//                logger.error("Connect redis server fail, exception:{}",e);
             } /*finally {
                 Runtime.getRuntime().addShutdownHook(new Thread() {
                     @Override

@@ -16,7 +16,7 @@ public class RedisLockInstance {
         try {
             client = RedisClientHandler.Factory.getInstance().asMode();
         } catch (Exception e) {
-            logger.error("redis lock connection fail !!!");
+//            logger.error("redis lock connection fail !!!");
         }
         return client;
     }

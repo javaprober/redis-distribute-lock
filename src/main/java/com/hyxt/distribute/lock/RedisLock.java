@@ -113,17 +113,17 @@ public class RedisLock {
                 rLock = client.getLock(serviceIndication);
                 lockMap.put(serviceIndication,rLock);
             }
-            logger.info("getLockName is :{}" , serviceIndication);
+//            logger.info("getLockName is :{}" , serviceIndication);
             rLock = client.getLock(serviceIndication);
 
             boolean hasLock = rLock.tryLock(waitTime, releaseTime, TimeUnit.MILLISECONDS);
             if (!hasLock) {
-                logger.error("Failed to obtain a lock");
+//                logger.error("Failed to obtain a lock");
                 throw new InterruptedException("Failed to obtain a lock");
             }
 
         } catch (InterruptedException e) {
-            logger.error("Failed to obtain a lock ,exception:{}" , e);
+//            logger.error("Failed to obtain a lock ,exception:{}" , e);
             throw e;
         }
         return rLock;

@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.*;
 
 /**
- * 无须排队
+ * 排队
  * Created by apple on 16/8/12.
  */
 public class RequestQueueExecutor {
@@ -92,7 +92,7 @@ public class RequestQueueExecutor {
 
     public static String getReqTag(String reqTag) {
         executor.submit(new Producer(reqTag));
-        System.out.println("线程池待处理:" + queue.size());
+//        System.out.println("线程池待处理:" + queue.size());
         Future<String> result = completionServReq.submit(new ConsumerReq());
         try {
             return result.get();
@@ -106,7 +106,7 @@ public class RequestQueueExecutor {
 
     public static RLock getRLock(String reqTag) {
         executor.submit(new Producer(reqTag));
-        System.out.println("线程池待处理:" + queue.size());
+//        System.out.println("线程池待处理:" + queue.size());
         Future<RLock> result = completionServ.submit(new Consumer());
         try {
             return result.get();
