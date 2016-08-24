@@ -6,7 +6,7 @@ package com.hyxt.distribute.lock.config;
  */
 public interface ModeConfig {
     //配置路径头
-    public static final String PRE_CONFIG = "/META-INF/config/";
+    public static final String PRE_CONFIG = "";
 
     //cluster mode
     public static final String CLUSTER_MODE = "clusterServersConfig.yml";
