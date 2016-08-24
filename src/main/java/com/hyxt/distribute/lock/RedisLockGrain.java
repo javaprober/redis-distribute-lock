@@ -14,9 +14,9 @@ import java.util.concurrent.TimeUnit;
  * redis分布式锁
  * Created by andy on 2016/8/10.
  */
-public class RedisLockBak {
+public class RedisLockGrain {
 
-    private static Logger logger= LoggerFactory.getLogger(RedisLockBak.class);
+    private static Logger logger= LoggerFactory.getLogger(RedisLockGrain.class);
 
     private final static ConcurrentMap<String,RLock> lockMap = new ConcurrentHashMap<String,RLock>();
 
