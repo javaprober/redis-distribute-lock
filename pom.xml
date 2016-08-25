@@ -7,7 +7,7 @@
     <groupId>com.hyxt</groupId>
     <artifactId>redis-lock</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.0.RELEASE</version>
+    <version>1.0.1.RELEASE</version>
 
 
     <properties>
@@ -17,27 +17,29 @@
     </properties>
 
     <dependencies>
-        <dependency>
+        <!--<dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${log4j.version}</version>
-        </dependency>
+            <scope>test</scope>
+        </dependency>-->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
             <version>${redisson.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
+            <scope>test</scope>
+        </dependency>-->
+        <!--<dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
-        </dependency>
+            <scope>test</scope>
+        </dependency>-->
     </dependencies>
 
     <distributionManagement>

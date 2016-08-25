@@ -2,8 +2,6 @@ package com.hyxt.distribute.lock.util;
 
 import com.hyxt.distribute.lock.config.ModeConfig;
 import org.redisson.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +12,7 @@ import java.net.URL;
  */
 public class FilePathUtil {
 
-    private static Logger logger = LoggerFactory.getLogger(FilePathUtil.class);
+//    private static Logger logger = LoggerFactory.getLogger(FilePathUtil.class);
 
     public static InputStream getFile(String filePath) {
 
@@ -25,8 +23,8 @@ public class FilePathUtil {
                     return resourceAsStream;
                 }
             } catch (Throwable e) {
-                logger.warn("Failed to load " + filePath + " file from "
-                        + filePath + "(ingore this file): " + e.getMessage(), e);
+                /*logger.warn("Failed to load " + filePath + " file from "
+                        + filePath + "(ingore this file): " + e.getMessage(), e);*/
             }
         }
 
@@ -37,8 +35,8 @@ public class FilePathUtil {
                 return resource.openStream();
             }
         } catch (Throwable t) {
-            logger.warn(
-                    "Fail to load " + filePath + " file: " + t.getMessage(), t);
+            /*logger.warn(
+                    "Fail to load " + filePath + " file: " + t.getMessage(), t);*/
         }
         
         return null;

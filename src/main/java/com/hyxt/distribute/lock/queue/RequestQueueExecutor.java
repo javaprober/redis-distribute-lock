@@ -3,8 +3,6 @@ package com.hyxt.distribute.lock.queue;
 import com.hyxt.distribute.lock.RedisLockInstance;
 import org.redisson.RedissonClient;
 import org.redisson.core.RLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.*;
 
@@ -14,7 +12,7 @@ import java.util.concurrent.*;
  */
 public class RequestQueueExecutor {
 
-    private static Logger logger= LoggerFactory.getLogger(RequestQueueExecutor.class);
+//    private static Logger logger= LoggerFactory.getLogger(RequestQueueExecutor.class);
     public final static ExecutorService executor = Executors.newSingleThreadExecutor();
     private final static ConcurrentMap<String,RLock> lockMap = new ConcurrentHashMap<String,RLock>();
     private final static Integer waitTime = 10000;
@@ -82,10 +80,10 @@ public class RequestQueueExecutor {
                 }
                 boolean hasLock = rLock.tryLock(waitTime, TimeUnit.MILLISECONDS);
                 if(!hasLock) {
-                    logger.error("Failed to obtain a lock ");
+//                    logger.error("Failed to obtain a lock ");
                 }
             } catch (InterruptedException ex) {
-                logger.error("Failed to obtain a lock ,exception:{}" + ex);
+//                logger.error("Failed to obtain a lock ,exception:{}" + ex);
             }
             return rLock;
         }

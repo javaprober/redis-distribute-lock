@@ -1,8 +1,5 @@
 package com.hyxt.distribute.lock.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ResourceBundle;
 
 
@@ -13,7 +10,7 @@ import java.util.ResourceBundle;
  */
 public class PropertyUtils {
 	
-	private static Logger logger = LoggerFactory.getLogger(PropertyUtils.class);
+//	private static Logger logger = LoggerFactory.getLogger(PropertyUtils.class);
 	
 	public static String getPropertyString(String bundleFileName,String propertyKey){
 		 try {
@@ -21,7 +18,7 @@ public class PropertyUtils {
 	            return ResourceBundle.getBundle(bundleFileName).getString(propertyKey);
 	             
 	        } catch (Exception e) {
-	        	logger.error("execute getPropertyString occur error", e);
+//	        	logger.error("execute getPropertyString occur error", e);
 	            return "";
 	        }
 	}

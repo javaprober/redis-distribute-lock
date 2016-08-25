@@ -4,8 +4,6 @@ import org.redisson.Config;
 import org.redisson.Redisson;
 import org.redisson.RedissonClient;
 import org.redisson.core.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Redisson 创建以及redis操作
@@ -13,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RedisUtils {
 
-    private static Logger logger= LoggerFactory.getLogger(RedisUtils.class);
+//    private static Logger logger= LoggerFactory.getLogger(RedisUtils.class);
 
     private RedisUtils() {
 
@@ -37,7 +35,7 @@ public class RedisUtils {
         Config config=new Config();
         config.useSingleServer().setAddress(ip+":"+port);
         RedissonClient redisson=Redisson.create(config);
-        logger.info("成功连接Redis Server"+"\t"+"连接"+ip+":"+port+"服务器");
+//        logger.info("成功连接Redis Server"+"\t"+"连接"+ip+":"+port+"服务器");
         return redisson;
     }
 
@@ -47,7 +45,7 @@ public class RedisUtils {
      */
     public void closeRedisson(RedissonClient redisson){
         redisson.shutdown();
-        logger.info("成功关闭Redis Client连接");
+//        logger.info("成功关闭Redis Client连接");
     }
 
     /**

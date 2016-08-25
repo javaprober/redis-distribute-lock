@@ -61,7 +61,7 @@ public interface RedisClientHandler {
 
         public RedissonClient asMode() {
             //single单机模式
-            return intern.interned(ClusterMode.SINGLE_INSTANCE);
+            return intern.interned(mode);
         }
 
 
@@ -70,9 +70,7 @@ public interface RedisClientHandler {
                 String configFilePath = modeConfigPath.get(mode);
                 InputStream inputStream = FilePathUtil.getFile(configFilePath);
                 Config config = new Config(Config.fromYAML(inputStream));
-                synchronized (Factory.class) {
-                    redissonClient = Redisson.create(config);
-                }
+                redissonClient = Redisson.create(config);
 //                logger.info("Connect redis server success");
             } catch (IOException e) {
 //                logger.error("Connect redis server fail, exception:{}",e);
