@@ -68,7 +68,7 @@ public class RedisLock {
 
         String waitTimeStr = PropertiesHandle.Factory.propertiesValue("redis.lock.default.waittime");
         if(waitTime == null || waitTime <= 0) {
-            //默认等待1秒
+            //默认等待10秒
             waitTime = Integer.parseInt(waitTimeStr);
         }
 
@@ -89,7 +89,7 @@ public class RedisLock {
 
         String waitTimeStr = PropertiesHandle.Factory.propertiesValue("redis.lock.default.waittime");
         if(releaseTime == null || releaseTime <= 0) {
-            //默认等待1秒
+            //默认等待10秒
             releaseTime = Integer.parseInt(releaseTimeStr);
         }
 
@@ -101,11 +101,11 @@ public class RedisLock {
         String waitTimeStr = PropertiesHandle.Factory.propertiesValue("redis.lock.default.waittime");
         String releaseTimeStr = PropertiesHandle.Factory.propertiesValue("redis.lock.default.timeout");
         if(waitTime == null || waitTime <= 0) {
-            //默认等待1秒
+            //默认等待10秒
             waitTime = Integer.parseInt(waitTimeStr);
         }
         if(releaseTime == null || releaseTime <= 0) {
-            //默认1秒超时释放
+            //默认10秒超时释放
             releaseTime = Integer.parseInt(releaseTimeStr);
         }
         RedissonClient client = RedisLockInstance.getClient();
