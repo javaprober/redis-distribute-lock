@@ -1,6 +1,7 @@
 package com.hyxt.distribute.lock.queue;
 
 import com.hyxt.distribute.lock.RedisLockInstance;
+import com.hyxt.distribute.lock.exception.RedisLockException;
 import org.redisson.RedissonClient;
 import org.redisson.core.RLock;
 
@@ -63,7 +64,7 @@ public class RequestQueueExecutor {
 
     public static class Consumer implements Callable<RLock> {
 
-        public RLock call() {
+        public RLock call() throws RedisLockException {
             String reqTag = null;
             try {
                 reqTag = queue.take();

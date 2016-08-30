@@ -1,6 +1,7 @@
 package com.hyxt.distribute.lock.base;
 
 import com.hyxt.distribute.lock.RedisLockInstance;
+import com.hyxt.distribute.lock.exception.RedisLockException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -39,7 +40,7 @@ public abstract class RedissionBaseTest{
         redisson.shutdown();
     }
 
-    public static RedissonClient createInstance() {
+    public static RedissonClient createInstance() throws RedisLockException {
         return RedisLockInstance.getClient();
     }
 }

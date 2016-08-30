@@ -1,6 +1,7 @@
 package com.hyxt.distribute.lock.client;
 
 import com.hyxt.distribute.lock.config.ModeConfig;
+import com.hyxt.distribute.lock.exception.RedisLockException;
 import com.hyxt.distribute.lock.util.FilePathUtil;
 import com.hyxt.distribute.lock.util.InternMap;
 import org.redisson.Config;
@@ -51,7 +52,7 @@ public interface RedisClientHandler {
         private final InternMap<ClusterMode, RedissonClient> intern
                 = new InternMap<ClusterMode, RedissonClient>(
                 new InternMap.ValueConstructor<ClusterMode, RedissonClient>() {
-                    public RedissonClient create(ClusterMode key) {
+                    public RedissonClient create(ClusterMode key) throws RedisLockException {
                         if(key != null) {
                             return buildRedissonClient();
                         }
@@ -59,20 +60,23 @@ public interface RedisClientHandler {
                     }
                 });
 
-        public RedissonClient asMode() {
+        public RedissonClient asMode() throws RedisLockException {
             //single单机模式
             return intern.interned(mode);
         }
 
 
-        public RedissonClient buildRedissonClient() {
+        public RedissonClient buildRedissonClient() throws RedisLockException {
             try {
                 String configFilePath = modeConfigPath.get(mode);
                 InputStream inputStream = FilePathUtil.getFile(configFilePath);
                 Config config = new Config(Config.fromYAML(inputStream));
                 redissonClient = Redisson.create(config);
-//                logger.info("Connect redis server success");
+                if(redissonClient == null) {
+                    throw new RedisLockException("redis lock create connection faild,Please check redis address or the number of connections beyond.");
+                }
             } catch (IOException e) {
+                throw new RedisLockException("Error reading configuration file:" + e.getMessage());
 //                logger.error("Connect redis server fail, exception:{}",e);
             } /*finally {
                 Runtime.getRuntime().addShutdownHook(new Thread() {

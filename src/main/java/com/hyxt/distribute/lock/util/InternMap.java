@@ -1,5 +1,7 @@
 package com.hyxt.distribute.lock.util;
 
+import com.hyxt.distribute.lock.exception.RedisLockException;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -11,14 +13,14 @@ public class InternMap<K, V> {
     private final ValueConstructor<K, V> valueConstructor;
 
     public interface ValueConstructor<K, V> {
-        V create(K key);
+        V create(K key) throws RedisLockException;
     }
 
     public InternMap(ValueConstructor<K, V> valueConstructor) {
         this.valueConstructor = valueConstructor;
     }
 
-    public V interned(K key) {
+    public V interned(K key) throws RedisLockException {
         V existingKey = storage.get(key);
         V newKey = null;
         if (existingKey == null) {
