@@ -5,7 +5,6 @@ import org.redisson.Config;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 /**
  * Created by andy on 2016/8/9.
@@ -29,11 +28,11 @@ public class FilePathUtil {
         }
 
         try {
-            URL resource = ClassHelpUtil.getClassLoader()
-                    .getResource(filePath);
-            if(resource != null) {
-                return resource.openStream();
+            InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath);
+            if (in == null) {
+                in = FilePathUtil.class.getResourceAsStream(filePath);
             }
+            return in;
         } catch (Throwable t) {
             /*logger.warn(
                     "Fail to load " + filePath + " file: " + t.getMessage(), t);*/

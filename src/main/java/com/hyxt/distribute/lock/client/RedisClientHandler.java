@@ -67,9 +67,10 @@ public interface RedisClientHandler {
 
 
         public RedissonClient buildRedissonClient() throws RedisLockException {
+            InputStream inputStream = null;
             try {
                 String configFilePath = modeConfigPath.get(mode);
-                InputStream inputStream = FilePathUtil.getFile(configFilePath);
+                inputStream = FilePathUtil.getFile(configFilePath);
                 Config config = new Config(Config.fromYAML(inputStream));
                 redissonClient = Redisson.create(config);
                 if(redissonClient == null) {
@@ -78,17 +79,15 @@ public interface RedisClientHandler {
             } catch (IOException e) {
                 throw new RedisLockException("Error reading configuration file:" + e.getMessage());
 //                logger.error("Connect redis server fail, exception:{}",e);
-            } /*finally {
-                Runtime.getRuntime().addShutdownHook(new Thread() {
-                    @Override
-                    public void run() {
-                        if (redissonClient != null) {
-                            redissonClient.shutdown();
-                            logger.info("关闭Redis Server连接");
-                        }
+            } finally {
+                if(inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+//                        e.printStackTrace();
                     }
-                });
-            }*/
+                }
+            }
             return redissonClient;
         }
     }
