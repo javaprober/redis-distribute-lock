@@ -7,7 +7,7 @@
     <groupId>com.hyxt</groupId>
     <artifactId>redis-lock</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.2.RELEASE</version>
+    <version>1.0.3.RELEASE</version>
 
 
     <properties>
