@@ -21,7 +21,7 @@
         //这部分注意操作边界，尽量保证尽早释放锁
         //建议业务处理时间不要超过10秒
         //------------------
-    } catch (InterruptedException e) {
+    } catch (RedisLockException e) {
         //锁获取异常捕获
         logger.error("exception:{}" , e);
     } finally {
